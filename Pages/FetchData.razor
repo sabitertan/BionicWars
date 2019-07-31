@@ -1,0 +1,74 @@
+﻿@page "/fetchdata"
+@inject HttpClient Http
+
+<h1>Star Wars People</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (people == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Height</th>
+                <th>Mass</th>
+                <th>hair_color</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in people.results)
+            {
+                <tr>
+                    <td><a href=@person.url> @person.name</a></td>
+                    <td>@person.height</td>
+                    <td>@person.mass</td>
+                    <td>@person.hair_color</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    
+    PeopleResult people;
+
+    protected override async Task OnInitAsync()
+    {
+        people = await Http.GetJsonAsync<PeopleResult>("https://swapi.co/api/people");
+        
+    }
+
+    class StarWarsPerson
+    {
+			public string name{ get; set; }
+			public string height{ get; set; }
+			public string mass{ get; set;}
+			public string hair_color{ get; set; }
+			public string skin_color{ get; set; }
+			public string eye_color{ get; set; }
+            public string birth_year{ get; set; }
+			public string gender{ get; set;}
+			public string homeworld{ get; set; }
+            public string[] films{ get; set;}
+            public string[] species{get; set;}
+            public string[] vehicles{get; set;}
+            public string[] starships{get;set;}
+			public string created{get;set;}
+			public string edited{get;set;}
+			public string url{get; set;}
+	}
+    class PeopleResult
+    {
+        public int count{get; set;}
+        public string next{get; set;}
+        public string previous{get;set;}
+        public StarWarsPerson[] results{get;set;}
+    }
+
+}
