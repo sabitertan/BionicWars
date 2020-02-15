@@ -11,58 +11,87 @@
 }
 else
 {
-            <MatTable Items="@people.results" LoadInitialData="true" Striped="true" RequestApiOnlyOnce="true"  AllowSelection="true" RowClass="tester"
-                  FilterByColumnName="Name" DebounceMilliseconds="150" class="mat-elevation-z5">
-            <MatTableHeader>
-                <th>Name</th>
-                <th>Height</th>
-                <th>Mass</th>
-                <th>hair_color</th>
-            </MatTableHeader>
-            <MatTableRow>
-                    <td><a href=@context.url> @context.name</a></td>
-                    <td>@context.height</td>
-                    <td>@context.mass</td>
-                    <td>@context.hair_color</td>
-            </MatTableRow>
-        </MatTable>
+    <MatTable Items="@people.results" LoadInitialData="true" Striped="true" RequestApiOnlyOnce="true" AllowSelection="true" RowClass="tester"
+              FilterByColumnName="Name" DebounceMilliseconds="150" class="mat-elevation-z5">
+        <MatTableHeader>
+            <th>Name</th>
+            <th>Height</th>
+            <th>Mass</th>
+            <th>hair_color</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td><MatButton @onclick=@(async()=> await OpenDialog(@context.name)) data-url=@context.url> @context.name</MatButton></td>
+            <td>@context.height</td>
+            <td>@context.mass</td>
+            <td>@context.hair_color</td>
+        </MatTableRow>
+    </MatTable>
+    <p>@dialogName</p>
+    <MatDialog @bind-IsOpen="@dialogIsOpen">
+        <MatDialogTitle>@dialogName</MatDialogTitle>
+        <MatDialogContent>
+            <img src="@dialogImage" />
+        </MatDialogContent>
+        <MatDialogActions>
+            <MatButton OnClick="@(e => { dialogIsOpen = false; dialogImage = null; dialogName = null; })">Close</MatButton>
+        </MatDialogActions>
+    </MatDialog>
 }
 
 @code {
-    
-    PeopleResult people;
 
-    protected override async Task OnInitAsync()
+    PeopleResult people;
+    bool dialogIsOpen = false;
+    string dialogName = null;
+    string dialogImage = null;
+    async Task<string> OpenDialog(string name)
+    {
+        dynamic src = await GetWikiPicture(name);
+        Console.WriteLine(src.toString());
+        dialogName = name;
+     dialogImage = src.items[0].thumbnail.source;
+      dialogIsOpen = true;
+        return "OK";
+    }
+    protected override async Task OnInitializedAsync()
     {
         people = await Http.GetJsonAsync<PeopleResult>("https://swapi.co/api/people");
+    }
+    protected async Task<dynamic> GetWikiPicture(string title)
+    {
+        return await Http.GetJsonAsync<dynamic>("https://en.wikipedia.org/api/rest_v1/page/media/" + title);
         
     }
 
+    class WikiMediaData
+    {
+        public string name { get; set; }
+    }
     class StarWarsPerson
     {
-			public string name{ get; set; }
-			public string height{ get; set; }
-			public string mass{ get; set;}
-			public string hair_color{ get; set; }
-			public string skin_color{ get; set; }
-			public string eye_color{ get; set; }
-            public string birth_year{ get; set; }
-			public string gender{ get; set;}
-			public string homeworld{ get; set; }
-            public string[] films{ get; set;}
-            public string[] species{get; set;}
-            public string[] vehicles{get; set;}
-            public string[] starships{get;set;}
-			public string created{get;set;}
-			public string edited{get;set;}
-			public string url{get; set;}
-	}
+        public string name { get; set; }
+        public string height { get; set; }
+        public string mass { get; set; }
+        public string hair_color { get; set; }
+        public string skin_color { get; set; }
+        public string eye_color { get; set; }
+        public string birth_year { get; set; }
+        public string gender { get; set; }
+        public string homeworld { get; set; }
+        public string[] films { get; set; }
+        public string[] species { get; set; }
+        public string[] vehicles { get; set; }
+        public string[] starships { get; set; }
+        public string created { get; set; }
+        public string edited { get; set; }
+        public string url { get; set; }
+    }
     class PeopleResult
     {
-        public int count{get; set;}
-        public string next{get; set;}
-        public string previous{get;set;}
-        public StarWarsPerson[] results{get;set;}
+        public int count { get; set; }
+        public string next { get; set; }
+        public string previous { get; set; }
+        public StarWarsPerson[] results { get; set; }
     }
 
 }

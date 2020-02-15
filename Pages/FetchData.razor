@@ -38,7 +38,7 @@ else
     
     PeopleResult people;
 
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         people = await Http.GetJsonAsync<PeopleResult>("https://swapi.co/api/people");
         
