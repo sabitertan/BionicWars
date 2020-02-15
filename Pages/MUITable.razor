@@ -47,7 +47,7 @@ else
     async Task<string> OpenDialog(string name)
     {
         dynamic src = await GetWikiPicture(name);
-        Console.WriteLine(src.toString());
+       // Console.WriteLine(src.toString());
         dialogName = name;
      dialogImage = src.items[0].thumbnail.source;
       dialogIsOpen = true;
@@ -59,14 +59,11 @@ else
     }
     protected async Task<dynamic> GetWikiPicture(string title)
     {
-        return await Http.GetJsonAsync<dynamic>("https://en.wikipedia.org/api/rest_v1/page/media/" + title);
+        return await Http.GetJsonAsync<WikiMediaData>("https://en.wikipedia.org/api/rest_v1/page/media/" + title);
         
     }
 
-    class WikiMediaData
-    {
-        public string name { get; set; }
-    }
+
     class StarWarsPerson
     {
         public string name { get; set; }
